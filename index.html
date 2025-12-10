@@ -1,44 +1,687 @@
 <!DOCTYPE html>
 <html lang="pl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>SocialPulse</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <h1>SocialPulse</h1>
-      <p>Zmieniamy dane w decyzje. Kompleksowa analiza Twojej marki w social mediach.</p>
-      <a href="#kontakt">Skontaktuj się z nami</a>
-    </header>
-    <main>
-      <section>
-        <h2>Co robimy?</h2>
-        <ul>
-          <li>Audyty social mediów i obecności online</li>
-          <li>Porównania z konkurencją i benchmarki</li>
-          <li>Comiesięczne raporty z KPI i rekomendacjami</li>
-          <li>Strategie contentowe dopasowane do branży</li>
-        </ul>
-      </section>
-      <section>
-        <h2>Dla kogo?</h2>
-        <p>Pracujemy z firmami lokalnymi i ogólnopolskimi – hotelami, markami beauty, siłowniami, restauracjami, e-commerce i nie tylko.</p>
-      </section>
-      <section id="kontakt">
-        <h2>Skontaktuj się z nami</h2>
-        <p>kontakt@socialpulse.website</p>
-        <form>
-          <input type="text" placeholder="Imię i nazwisko" />
-          <input type="email" placeholder="Adres e-mail" />
-          <textarea placeholder="W czym możemy pomóc?"></textarea>
-          <button type="submit">Wyślij</button>
-        </form>
-      </section>
-    </main>
-    <footer>
-      <p>© 2025 SocialPulse. Wszystkie prawa zastrzeżone.</p>
-    </footer>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 FAMILIADA - Pełna wersja</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 3em;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .round-info {
+            font-size: 1.6em;
+            background: rgba(255,255,255,0.2);
+            padding: 15px 30px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 25px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .team-panel h3 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        .team {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 1.6em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .team.blue { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
+        .team.active { 
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+        }
+
+        .team.steal-chance {
+            animation: stealPulse 1s infinite;
+            border: 4px solid #ffd700;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes stealPulse {
+            0%, 100% { box-shadow: 0 0 30px #ffd700; }
+            50% { box-shadow: 0 0 50px #ffd700, 0 0 70px #ffed4a; }
+        }
+
+        .answers-panel {
+            grid-column: 2;
+        }
+
+        .question {
+            font-size: 2.8em;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .answer-slot {
+            height: 120px;
+            border: 5px solid rgba(255,255,255,0.6);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-slot:hover:not(.revealed):not(.strike) {
+            border-color: #fff;
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .answer-slot.revealed {
+            background: linear-gradient(135deg, #26de81, #20bf6b);
+            border-color: #1dd1a1;
+            color: white;
+            animation: reveal 0.8s ease;
+        }
+
+        .answer-slot.strike {
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            border-color: #ff4757;
+            color: white;
+            animation: strike 0.8s ease;
+        }
+
+        .answer-text {
+            font-size: 1.1em;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        @keyframes reveal {
+            0% { transform: scale(0.8) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        @keyframes strike {
+            0% { transform: scale(1.2) shake; }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .buzzer-btn {
+            width: 100%;
+            padding: 25px;
+            font-size: 1.6em;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 15px 0;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .buzzer-red { background: linear-gradient(135deg, #ff4757, #ff6b6b); color: white; }
+        .buzzer-blue { background: linear-gradient(135deg, #3742fa, #4ecdc4); color: white; }
+
+        .buzzer-btn:active {
+            transform: scale(0.97);
+        }
+
+        .input-area {
+            margin: 25px 0;
+        }
+
+        #answerInput {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.3em;
+            border: none;
+            border-radius: 18px;
+            text-align: center;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 18px;
+            cursor: pointer;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-success { background: linear-gradient(135deg, #00b894, #00cec9); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #ff6b6b, #ff5252); color: white; }
+
+        .status {
+            text-align: center;
+            font-size: 1.3em;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 1200px) {
+            .game-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .answers-panel { grid-column: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏆 FAMILIADA - PEŁNA WERSJA</h1>
+        <div class="round-info">
+            Runda: <span id="currentRound">1</span>/12 | 
+            Zespół 1: <span id="team1Score">0</span> pkt | 
+            Zespół 2: <span id="team2Score">0</span> pkt
+        </div>
+    </div>
+
+    <div class="game-container">
+        <!-- ZESPÓŁ 1 -->
+        <div class="panel team-panel">
+            <h3>🔴 ZESPÓŁ 1</h3>
+            <div class="team red" id="team1Display">
+                <div style="font-size: 2.5em; margin-bottom: 10px;">0 pkt</div>
+                <div style="font-size: 1.2em;">Strajki: <span id="team1Strikes">0</span>/3</div>
+            </div>
+            <button class="buzzer-btn buzzer-red" onclick="buzzTeam('team1')">
+                🔔 BUZZER
+            </button>
+            <div id="team1Status" class="status" style="display: none;"></div>
+        </div>
+
+        <!-- PYTANIA I ODPOWIEDZI -->
+        <div class="panel answers-panel">
+            <div class="question" id="questionText">
+                Naciśnij 🎯 NOWA RUNDA aby rozpocząć!
+            </div>
+            
+            <div class="answers-grid" id="answersGrid"></div>
+
+            <div style="margin-top: 25px; text-align: center; font-size: 1.8em;">
+                Punkty rundy: <span id="roundScore">0</span>/150
+            </div>
+        </div>
+
+        <!-- ZESPÓŁ 2 -->
+        <div class="panel team-panel">
+            <h3>🔵 ZESPÓŁ 2</h3>
+            <div class="team blue" id="team2Display">
+                <div style="font-size: 2.5em; margin-bottom: 10px;">0 pkt</div>
+                <div style="font-size: 1.2em;">Strajki: <span id="team2Strikes">0</span>/3</div>
+            </div>
+            <button class="buzzer-btn buzzer-blue" onclick="buzzTeam('team2')">
+                🔔 BUZZER
+            </button>
+            
+            <div class="input-area">
+                <input type="text" id="answerInput" placeholder="Wpisz odpowiedź... (Enter)" autocomplete="off">
+                <button class="btn btn-success" onclick="checkAnswer()">✅ SPRAWDŹ</button>
+                <button class="btn btn-danger" onclick="addStrike()">❌ STRAJK</button>
+            </div>
+            <div id="team2Status" class="status" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+        <button class="btn btn-primary" onclick="newRound()" style="display: inline-block; padding: 25px 50px; font-size: 1.8em;">
+            🎯 NOWA RUNDA
+        </button>
+        <button class="btn btn-danger" onclick="resetGame()" style="display: inline-block; padding: 25px 50px; font-size: 1.8em; margin-left: 25px;">
+            🔄 RESET GRY
+        </button>
+    </div>
+
+    <script>
+        // 12 RUND Z PEŁNYMI ODPOWIEDZIALMI
+        const pytania = [
+            {
+                pytanie: "Nazwij największe miasta w Polsce",
+                odpowiedzi: [
+                    { text: "Warszawa", punkty: 35 },
+                    { text: "Kraków", punkty: 22 },
+                    { text: "Wrocław", punkty: 12 },
+                    { text: "Poznań", punkty: 9 },
+                    { text: "Gdańsk", punkty: 7 },
+                    { text: "Katowice", punkty: 5 },
+                    { text: "Łódź", punkty: 4 },
+                    { text: "Szczecin", punkty: 3 }
+                ]
+            },
+            {
+                pytanie: "Co Polacy jedzą najczęściej na śniadanie?",
+                odpowiedzi: [
+                    { text: "Kanapki", punkty: 42 },
+                    { text: "Jajecznica", punkty: 20 },
+                    { text: "Płatki", punkty: 14 },
+                    { text: "Owsianka", punkty: 9 },
+                    { text: "Parówki", punkty: 6 },
+                    { text: "Omlet", punkty: 4 },
+                    { text: "Twaróg", punkty: 3 }
+                ]
+            },
+            {
+                pytanie: "Nazwij kolory tęczy",
+                odpowiedzi: [
+                    { text: "Czerwony", punkty: 28 },
+                    { text: "Pomarańczowy", punkty: 22 },
+                    { text: "Żółty", punkty: 18 },
+                    { text: "Zielony", punkty: 15 },
+                    { text: "Niebieski", punkty: 10 },
+                    { text: "Granatowy", punkty: 4 },
+                    { text: "Fioletowy", punkty: 3 }
+                ]
+            },
+            {
+                pytanie: "Co zabierasz na plażę?",
+                odpowiedzi: [
+                    { text: "Ręcznik", punkty: 35 },
+                    { text: "Krem z filtrem", punkty: 25 },
+                    { text: "Okulary przeciwsłoneczne", punkty: 15 },
+                    { text: "Parawan", punkty: 10 },
+                    { text: "Leżak", punkty: 7 },
+                    { text: "Picie", punkty: 5 },
+                    { text: "Kapelusz", punkty: 3 }
+                ]
+            },
+            {
+                pytanie: "Nazwij najpopularniejsze dyscypliny sportowe",
+                odpowiedzi: [
+                    { text: "Piłka nożna", punkty: 45 },
+                    { text: "Siatkówka", punkty: 18 },
+                    { text: "Koszykówka", punkty: 12 },
+                    { text: "Tenis", punkty: 8 },
+                    { text: "Pływanie", punkty: 6 },
+                    { text: "Bieganie", punkty: 5 },
+                    { text: "Rower", punkty: 3 }
+                ]
+            },
+            {
+                pytanie: "Nazwij części ciała",
+                odpowiedzi: [
+                    { text: "Głowa", punkty: 30 },
+                    { text: "Ręka", punkty: 22 },
+                    { text: "Noga", punkty: 18 },
+                    { text: "Oko", punkty: 12 },
+                    { text: "Nos", punkty: 8 },
+                    { text: "Ucho", punkty: 5 },
+                    { text: "Usta", punkty: 3 }
+                ]
+            },
+            {
+                pytanie: "Co znajduje się w kuchni?",
+                odpowiedzi: [
+                    { text: "Lodówka", punkty: 35 },
+                    { text: "Kuchenka", punkty: 25 },
+                    { text: "Stół", punkty: 15 },
+                    { text: "Krzesła", punkty: 10 },
+                    { text: "Zlew", punkty: 8 },
+                    { text: "Szafki", punkty: 5 },
+                    { text: "Mikrofalówka", punkty: 2 }
+                ]
+            },
+            {
+                pytanie: "Nazwij meble w salonie",
+                odpowiedzi: [
+                    { text: "Sofa", punkty: 40 },
+                    { text: "Telewizor", punkty: 25 },
+                    { text: "Stół", punkty: 15 },
+                    { text: "Fotele", punkty: 10 },
+                    { text: "Szafka RTV", punkty: 5 },
+                    { text: "Dywan", punkty: 3 },
+                    { text: "Obraz", punkty: 2 }
+                ]
+            },
+            {
+                pytanie: "Jakie zwierzęta domowe znasz?",
+                odpowiedzi: [
+                    { text: "Pies", punkty: 45 },
+                    { text: "Kot", punkty: 35 },
+                    { text: "Ryby", punkty: 10 },
+                    { text: "Chomik", punkty: 5 },
+                    { text: "Papuga", punkty: 3 },
+                    { text: "Królik", punkty: 2 }
+                ]
+            },
+            {
+                pytanie: "Nazwij dni tygodnia",
+                odpowiedzi: [
+                    { text: "Poniedziałek", punkty: 20 },
+                    { text: "Wtorek", punkty: 18 },
+                    { text: "Środa", punkty: 16 },
+                    { text: "Czwartek", punkty: 14 },
+                    { text: "Piątek", punkty: 12 },
+                    { text: "Sobota", punkty: 10 },
+                    { text: "Niedziela", punkty: 8 }
+                ]
+            },
+            {
+                pytanie: "Nazwij pory roku",
+                odpowiedzi: [
+                    { text: "Lato", punkty: 35 },
+                    { text: "Zima", punkty: 30 },
+                    { text: "Wiosna", punkty: 20 },
+                    { text: "Jesień", punkty: 15 }
+                ]
+            },
+            {
+                pytanie: "Co pijesz najczęściej?",
+                odpowiedzi: [
+                    { text: "Woda", punkty: 40 },
+                    { text: "Kawa", punkty: 25 },
+                    { text: "Herbata", punkty: 20 },
+                    { text: "Sok", punkty: 10 },
+                    { text: "Mleko", punkty: 5 }
+                ]
+            }
+        ];
+
+        let currentRound = 1;
+        let currentQuestion = null;
+        let activeTeam = null;
+        let stealChanceTeam = null;
+        let team1Score = 0;
+        let team2Score = 0;
+        let team1Strikes = 0;
+        let team2Strikes = 0;
+        let roundScore = 0;
+        let revealedAnswers = [];
+        let gamePhase = 'buzzer'; // 'buzzer', 'first_team', 'steal_chance'
+
+        function newRound() {
+            if (currentRound > pytania.length) {
+                alert(`🏆 KONIEC GRY!\nZespół 1: ${team1Score} pkt\nZespół 2: ${team2Score} pkt\n\n${team1Score > team2Score ? 'ZESPÓŁ 1 WYGRYWA!' : team2Score > team1Score ? 'ZESPÓŁ 2 WYGRYWA!' : 'REMIS!'}`);
+                resetGame();
+                return;
+            }
+
+            currentQuestion = JSON.parse(JSON.stringify(pytania[currentRound - 1]));
+            revealedAnswers = [];
+            roundScore = 0;
+            activeTeam = null;
+            stealChanceTeam = null;
+            gamePhase = 'buzzer';
+            
+            document.getElementById('questionText').textContent = currentQuestion.pytanie;
+            document.getElementById('currentRound').textContent = currentRound;
+            renderAnswers();
+            updateScores();
+            clearAllStatus();
+        }
+
+        function renderAnswers() {
+            const grid = document.getElementById('answersGrid');
+            grid.innerHTML = '';
+            
+            currentQuestion.odpowiedzi.slice(0, 8).forEach((odp, index) => {
+                const slot = document.createElement('div');
+                slot.className = 'answer-slot';
+                const isRevealed = revealedAnswers.includes(index);
+                
+                if (isRevealed) {
+                    slot.classList.add('revealed');
+                    slot.innerHTML = `
+                        <div style="font-size: 1.3em;">${odp.text}</div>
+                        <div class="answer-text">${odp.punkty} pkt</div>
+                    `;
+                } else {
+                    slot.innerHTML = `
+                        <div style="font-size: 2.5em;">${String(index + 1).padStart(2, '0')}</div>
+                        <div style="font-size: 1em; opacity: 0.8;">${odp.punkty} pkt</div>
+                    `;
+                    slot.onclick = () => revealAnswer(index);
+                }
+                
+                grid.appendChild(slot);
+            });
+        }
+
+        function revealAnswer(index) {
+            if (revealedAnswers.includes(index)) return;
+            
+            const answer = currentQuestion.odpowiedzi[index];
+            revealedAnswers.push(index);
+            roundScore += answer.punkty;
+            
+            renderAnswers();
+            updateRoundScore();
+            
+            // Automatycznie sprawdź czy koniec rundy
+            if (roundScore >= 150 || revealedAnswers.length >= currentQuestion.odpowiedzi.length) {
+                setTimeout(endRound, 1000);
+            }
+        }
+
+        function buzzTeam(team) {
+            if (gamePhase !== 'buzzer' || activeTeam) return;
+            
+            activeTeam = team;
+            gamePhase = 'first_team';
+            const teamName = team === 'team1' ? 'Zespół 1' : 'Zespół 2';
+            
+            updateTeamStatus(team, `🔔 ${teamName} - TWOJA KOLEJ!`);
+            setActiveTeamVisual(team, true);
+            
+            setTimeout(() => {
+                document.getElementById('answerInput').focus();
+            }, 200);
+        }
+
+        function checkAnswer() {
+            if (!activeTeam || gamePhase !== 'first_team') {
+                alert('Najpierw buzzer!');
+                return;
+            }
+            
+            const answerText = document.getElementById('answerInput').value.trim();
+            document.getElementById('answerInput').value = '';
+            
+            if (!answerText) return;
+            
+            const foundIndex = currentQuestion.odpowiedzi.findIndex((odp, index) => 
+                !revealedAnswers.includes(index) &&
+                (odp.text.toLowerCase().includes(answerText.toLowerCase()) || 
+                 answerText.toLowerCase().includes(odp.text.toLowerCase().split(' ')[0]))
+            );
+            
+            if (foundIndex !== -1) {
+                updateTeamStatus(activeTeam, '✅ POPRAWNIE!');
+                revealAnswer(foundIndex);
+            } else {
+                updateTeamStatus(activeTeam, '❌ ŹLE!');
+                addStrike(activeTeam);
+                giveStealChance();
+            }
+        }
+
+        function addStrike(team) {
+            if (team === 'team1') {
+                team1Strikes++;
+                document.getElementById('team1Strikes').textContent = team1Strikes;
+                if (team1Strikes >= 3) {
+                    endTeamTurn('team1');
+                }
+            } else {
+                team2Strikes++;
+                document.getElementById('team2Strikes').textContent = team2Strikes;
+                if (team2Strikes >= 3) {
+                    endTeamTurn('team2');
+                }
+            }
+            updateScores();
+        }
+
+        function giveStealChance() {
+            const otherTeam = activeTeam === 'team1' ? 'team2' : 'team1';
+            stealChanceTeam = otherTeam;
+            gamePhase = 'steal_chance';
+            
+            updateTeamStatus(otherTeam, '🟡 SZANSA NA KRADZIEŻ!');
+            setActiveTeamVisual(otherTeam, true, 'steal-chance');
+            
+            setTimeout(() => {
+                alert('SZANSA NA KRADZIEŻ dla ' + (otherTeam === 'team1' ? 'Zespołu 1' : 'Zespołu 2'));
+                document.getElementById('answerInput').focus();
+            }, 500);
+        }
+
+        function endTeamTurn(team) {
+            setActiveTeamVisual(team, false);
+            updateTeamStatus(team, '');
+            activeTeam = null;
+            gamePhase = 'buzzer';
+        }
+
+        function endRound() {
+            const winner = team1Score > team2Score ? 'Zespół 1' : 'Zespół 2';
+            const remainingPoints = 150 - roundScore;
+            
+            if (remainingPoints > 0 && stealChanceTeam) {
+                // Kradzież - drugi zespół dostaje resztę punktów
+                if (stealChanceTeam === 'team1') team1Score += remainingPoints;
+                else team2Score += remainingPoints;
+                alert(`🎉 KRADZIEŻ UDANA! ${stealChanceTeam === 'team1' ? 'Zespół 1' : 'Zespół 2'} dostaje ${remainingPoints} pkt!`);
+            } else {
+                alert(`🎉 Runda zakończona!\n${winner} zdobywa rundę (${roundScore} pkt)`);
+            }
+            
+            currentRound++;
+            setTimeout(newRound, 2000);
+        }
+
+        function setActiveTeamVisual(team, active, extraClass = '') {
+            document.getElementById('team1Display').className = `team red ${active && team === 'team1' ? 'active ' + extraClass : ''}`;
+            document.getElementById('team2Display').className = `team blue ${active && team === 'team2' ? 'active ' + extraClass : ''}`;
+        }
+
+        function updateTeamStatus(team, message) {
+            const statusEl = document.getElementById(team === 'team1' ? 'team1Status' : 'team2Status');
+            if (message) {
+                statusEl.textContent = message;
+                statusEl.style.display = 'block';
+            } else {
+                statusEl.style.display = 'none';
+            }
+        }
+
+        function clearAllStatus() {
+            setActiveTeamVisual('team1', false);
+            setActiveTeamVisual('team2', false);
+            updateTeamStatus('team1', '');
+            updateTeamStatus('team2', '');
+        }
+
+        function updateScores() {
+            document.getElementById('team1Score').textContent = team1Score;
+            document.getElementById('team2Score').textContent = team2Score;
+            document.getElementById('roundScore').textContent = roundScore;
+        }
+
+        function updateRoundScore() {
+            document.getElementById('roundScore').textContent = roundScore;
+        }
+
+        function resetGame() {
+            currentRound = 1;
+            team1Score = 0;
+            team2Score = 0;
+            team1Strikes = 0;
+            team2Strikes = 0;
+            newRound();
+        }
+
+        // Event listeners
+        document.getElementById('answerInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                checkAnswer();
+            }
+        });
+
+        // Start gry
+        newRound();
+    </script>
+</body>
 </html>
