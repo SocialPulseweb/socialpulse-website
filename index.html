@@ -2,193 +2,153 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Familiada – SMS</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>Familiada SMS</title>
 <style>
-:root{--blue:#002266;--gold:#ffcc00;--green:#2ecc71;--red:#e74c3c}
-body{margin:0;background:#111;color:#fff;font-family:Segoe UI,Arial,sans-serif;display:flex;justify-content:center;padding:20px}
-#game{max-width:900px;width:100%;background:var(--blue);border-radius:20px;padding:20px;border:8px solid #333}
-.header{display:flex;justify-content:space-between;margin-bottom:15px}
-.team{width:30%;background:#001133;text-align:center;border-radius:10px;padding:10px;border:3px solid #444}
-.team.active{border-color:var(--green);box-shadow:0 0 15px var(--green)}
-.score{font-size:2.5rem;color:var(--gold)}
-.bank{text-align:center;border:2px dashed var(--gold);padding:10px;border-radius:10px}
-#round-title{text-align:center;font-size:1.3rem;margin:10px 0}
-#question{text-align:center;font-size:1.5rem;margin-bottom:15px}
-.board{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.slot{background:#001a4d;border:1px solid var(--gold);padding:10px 15px;display:flex;justify-content:space-between}
-.revealed{background:#0044cc;color:var(--gold);font-weight:bold}
-.missed{opacity:.5}
-#strikes{text-align:center;font-size:3rem;color:var(--red);min-height:60px}
-.controls{display:flex;gap:10px;margin-top:15px}
-input{flex:1;padding:12px;font-size:1.1rem}
-button{padding:12px 15px;font-weight:bold;border:none;cursor:pointer}
-.ok{background:var(--gold)}
-.swap{background:#9b59b6;color:white}
-#end-panel{display:none;text-align:center;margin-top:15px}
-.give{background:var(--green);color:white;margin:5px}
-.next{background:#3498db;color:white;width:100%;font-size:1.4rem;display:none}
-.sms{color:#ff8080;font-weight:bold}
+body {
+  background:#0b1c3d;
+  color:white;
+  font-family:Arial, sans-serif;
+  text-align:center;
+}
+h1,h2 { margin:10px }
+.board {
+  max-width:900px;
+  margin:20px auto;
+  background:#132a63;
+  padding:20px;
+  border-radius:10px;
+}
+.answer {
+  display:flex;
+  justify-content:space-between;
+  background:#1f3b87;
+  margin:6px 0;
+  padding:10px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.answer.revealed {
+  background:#f2c94c;
+  color:black;
+  font-weight:bold;
+}
+.sms {
+  border:3px solid red;
+  padding:10px;
+  border-radius:10px;
+  color:#ff5252;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+.controls button {
+  margin:5px;
+  padding:10px 15px;
+  font-size:16px;
+}
 </style>
 </head>
-
 <body>
-<div id="game">
 
-<div class="header">
-  <div id="t1" class="team active">DRUŻYNA 1<div id="s1" class="score">0</div></div>
-  <div class="bank">BANK<div id="bank" class="score">0</div></div>
-  <div id="t2" class="team">DRUŻYNA 2<div id="s2" class="score">0</div></div>
+<h1>🎤 FAMILIADA</h1>
+<h2 id="roundTitle"></h2>
+
+<div class="board">
+  <div id="smsBox"></div>
+  <h2 id="question"></h2>
+  <div id="answers"></div>
 </div>
-
-<div id="round-title"></div>
-<div id="question"></div>
-<div id="board" class="board"></div>
-<div id="strikes"></div>
 
 <div class="controls">
-  <input id="ans" placeholder="Wpisz odpowiedź">
-  <button class="ok" onclick="check()">OK</button>
-  <button class="swap" onclick="swap()">ZMIANA</button>
-</div>
-
-<div id="end-panel">
-  <p>Komu przyznać BANK?</p>
-  <button class="give" onclick="give(1)">Drużyna 1</button>
-  <button class="give" onclick="give(2)">Drużyna 2</button>
-  <button class="next" onclick="next()">NASTĘPNE ➜</button>
-</div>
-
+  <button onclick="nextQuestion()">➡ Następne pytanie</button>
 </div>
 
 <script>
 // ================= PYTANIA =================
-const db = [
-  // POJEDYNEK 1
-  {q:"Ulubione miejsce w szkole?",sms:false,a:[["Świetlica",43],["Sklepik",28],["Szatnie",17],["Automat",8],["Toaleta",4]]},
-  {q:"Ulubiony nauczyciel?",sms:false,a:[["Andrzej Biel",38],["K. Kołak",23],["M. Ciapka",17],["S. Siekacz",12],["K. Jarosz-Dopierała",10]]},
-  {q:"[SMS] Najlepsze miejsce na wagary uczniów?",sms:true,a:[["Lidl",36],["Bonarka",25],["McDonald",18],["Żabka",15],["Dom",6]]},
 
-  // POJEDYNEK 2
-  {q:"Ulubiony przedmiot uczniów?",sms:false,a:[["Historia/HiT",39],["Angielski",28],["WF",21],["Filozofia",7],["Godzina wychowawcza",4]]},
-  {q:"Najsurowszy nauczyciel?",sms:false,a:[["Studzienny",41],["Wrońska",29],["Paterek",17],["Wiluż",14],["Adamczyk",9]]},
-  {q:"[SMS] Nauczyciel z najdłuższym stażem?",sms:true,a:[["Czupryna",33],["Chromniak",27],["Studzienny",18],["Siekacz",14],["Wirga",8]]},
-
-  // POJEDYNEK 3
-  {q:"Co można znaleźć w łazience?",sms:false,a:[["Wanna",30],["Mydło",25],["Ręcznik",20],["Lustro",15],["Szczoteczka",10]]},
-  {q:"Z czym kojarzy się szkoła?",sms:false,a:[["Nauczyciel",25],["Lekcje",20],["Tablica",18],["Zeszyty",15],["Uczniowie",10]]},
-  {q:"[SMS] Z czym kojarzy się szkoła średnia?",sms:true,a:[["Matura",30],["Nauczyciele",25],["Uczniowie",20],["Zajęcia",15],["Egzaminy",10]]},
-
-  // POJEDYNEK 4
-  {q:"Co można znaleźć w kuchni?",sms:false,a:[["Lodówka",30],["Kuchenka",25],["Garnek",20],["Nóż",15],["Talerze",10]]},
-  {q:"Co można robić w parku?",sms:false,a:[["Spacerować",30],["Karmić ptaki",20],["Biegać",18],["Siedzieć",15],["Piknik",10]]},
-  {q:"[SMS] Najlepsze wagary uczniów?",sms:true,a:[["Lidl",36],["Bonarka",25],["McDonald",18],["Żabka",15],["Dom",6]]},
-
-  // POJEDYNEK 5
-  {q:"Co można robić zimą?",sms:false,a:[["Narty",25],["Bałwan",20],["Śnieżki",18],["Sanki",15],["Herbata",10]]},
-  {q:"Co zabierasz na plażę?",sms:false,a:[["Ręcznik",30],["Krem",20],["Strój",18],["Parasol",12],["Okulary",10]]},
-  {q:"[SMS] Co robisz w weekend majowy?",sms:true,a:[["Grilluję",30],["Działka",25],["Odpoczywam",20],["Wyjazd",15],["Znajomi",10]]},
-
-  // PÓŁFINAŁY
-  {q:"Co można robić zimą?",sms:false,a:[["Narty",25],["Bałwan",20],["Śnieżki",18],["Sanki",15],["Herbata",10]]},
-  {q:"Co zabierasz na plażę?",sms:false,a:[["Ręcznik",30],["Krem",20],["Strój",18],["Parasol",12],["Okulary",10]]},
-  {q:"Co można znaleźć w kuchni?",sms:false,a:[["Lodówka",30],["Kuchenka",25],["Garnek",20],["Nóż",15],["Talerze",10]]},
-  {q:"Co można robić w parku?",sms:false,a:[["Spacerować",30],["Karmić ptaki",20],["Biegać",18],["Siedzieć",15],["Piknik",10]]}
+// --- SMS ---
+const sms = [
+{
+q:"Ulubione miejsce w szkole?",
+a:[["Świetlica",43],["Sklepik",28],["Szatnie",17],["Automat",8],["Toaleta",4]]
+},
+{
+q:"Ulubiony nauczyciel?",
+a:[["Andrzej Biel",38],["K. Kołak",23],["M. Ciapka",17],["Sławomir Siekacz",12],["Katarzyna Jarosz-Dopierała",10]]
+},
+{
+q:"Najsurowszy nauczyciel?",
+a:[["Magdalena Studzienny",41],["Wrońska",29],["Paterek",17],["Wiluż",14],["Adamczyk",9]]
+},
+{
+q:"Ulubiony przedmiot uczniów?",
+a:[["Historia / HiT",39],["Angielski",28],["WF",21],["Filozofia",7],["Godzina wychowawcza",4]]
+},
+{
+q:"Najlepsze miejsce na wagary uczniów?",
+a:[["Lidl",36],["Bonarka",25],["McDonald",18],["Żabka",15],["Dom",6]]
+}
 ];
 
-// ================= STRUKTURA =================
+// --- NORMALNE ---
+const normal = [
+{q:"Co zabierasz ze sobą na plażę?",a:[["Ręcznik",30],["Krem",20],["Strój",18],["Parasol",12],["Okulary",10]]},
+{q:"Co robisz kiedy nie możesz zasnąć?",a:[["Liczę barany",28],["Czytam",22],["TV",18],["Kręcę się",15],["Jem",10]]},
+{q:"Co można znaleźć w damskiej torebce?",a:[["Portfel",35],["Klucze",25],["Telefon",20],["Pomadka",10],["Chusteczki",8]]},
+{q:"Jakie zwierzę hoduje się w domu?",a:[["Pies",40],["Kot",35],["Rybki",10],["Papuga",8],["Królik",5]]},
+{q:"Jakie warzywo rośnie pod ziemią?",a:[["Ziemniak",45],["Marchewka",25],["Burak",15],["Pietruszka",10],["Seler",5]]},
+{q:"Co można znaleźć w kuchni?",a:[["Lodówka",30],["Kuchenka",25],["Garnek",20],["Nóż",15],["Talerze",10]]},
+{q:"Co robisz po przebudzeniu?",a:[["Myję zęby",25],["Wstaję",22],["Łazienka",18],["Śniadanie",15],["Telefon",12]]},
+{q:"Co można zobaczyć w zoo?",a:[["Słoń",30],["Lew",25],["Małpa",20],["Żyrafa",15],["Tygrys",10]]},
+{q:"Z czym kojarzy się wieś?",a:[["Krowy",25],["Traktor",22],["Kogut",18],["Pole",15],["Spokój",8]]},
+{q:"Co robisz w wolny weekend?",a:[["Śpię",30],["TV",20],["Wycieczka",18],["Znajomi",15],["Sprzątanie",10]]}
+];
+
+// ================= RUNDA =================
+
 const rounds = [
-  {title:"POJEDYNEK 1",q:[0,1,2]},
-  {title:"POJEDYNEK 2",q:[3,4,5]},
-  {title:"POJEDYNEK 3",q:[6,7,8]},
-  {title:"POJEDYNEK 4",q:[9,10,11]},
-  {title:"POJEDYNEK 5",q:[12,13,14]},
-  {title:"PÓŁFINAŁ 1",q:[15,16]},
-  {title:"PÓŁFINAŁ 2",q:[17,18]}
+{title:"POJEDYNEK 1", list:[normal[0],normal[1],sms[0]]},
+{title:"POJEDYNEK 2", list:[normal[2],normal[3],sms[1]]},
+{title:"POJEDYNEK 3", list:[normal[4],normal[5],sms[2]]},
+{title:"POJEDYNEK 4", list:[normal[6],normal[7],sms[3]]},
+{title:"POJEDYNEK 5", list:[normal[8],normal[9],sms[4]]},
+{title:"PÓŁFINAŁ 1", list:[normal[0],normal[2]]},
+{title:"PÓŁFINAŁ 2", list:[normal[3],normal[4]]}
 ];
+
+let r=0,q=0;
 
 // ================= LOGIKA =================
-let r=0,p=0,bank=0,str=0,rev=0,team=1,s1=0,s2=0;
 
-function load(){
- const d=db[rounds[r].q[p]];
- document.getElementById("round-title").innerText=rounds[r].title+" – pytanie "+(p+1);
- document.getElementById("question").innerHTML=d.sms?`<span class="sms">PYTANIE SMS</span><br>${d.q}`:d.q;
- board.innerHTML="";strikes.innerText="";
- bank=0;rev=0;str=0;bankEl.innerText=0;
- d.a.forEach((x,i)=>{
-  let div=document.createElement("div");
-  div.className="slot";
-  div.id="s"+i;
-  div.innerHTML=`${i+1}. ..........<span>--</span>`;
-  board.appendChild(div);
- });
- end.style.display="none";
+function loadQuestion(){
+const round=rounds[r];
+const data=round.list[q];
+
+document.getElementById("roundTitle").innerText=round.title;
+document.getElementById("question").innerText=data.q;
+
+const smsBox=document.getElementById("smsBox");
+smsBox.innerHTML=round.title.includes("POJEDYNEK") && q===2 ? "<div class='sms'>PYTANIE SMS</div>" : "";
+
+const box=document.getElementById("answers");
+box.innerHTML="";
+data.a.forEach(a=>{
+const d=document.createElement("div");
+d.className="answer";
+d.innerHTML=`<span>${a[0]}</span><span>?</span>`;
+d.onclick=()=>{d.classList.add("revealed");d.children[1].innerText=a[1];};
+box.appendChild(d);
+});
 }
 
-function check(){
- let v=ans.value.toLowerCase().trim();ans.value="";
- if(!v)return;
- let f=false;
- db[rounds[r].q[p]].a.forEach((a,i)=>{
-  if(a[0].toLowerCase()==v){
-   let s=document.getElementById("s"+i);
-   if(!s.classList.contains("revealed")){
-    s.classList.add("revealed");
-    s.innerHTML=`${i+1}. ${a[0]}<span>${a[1]}</span>`;
-    bank+=a[1];bankEl.innerText=bank;rev++;
-   }
-   f=true;
-  }
- });
- if(!f){str++;strikes.innerText="X ".repeat(str);if(str>=3)endRound()}
- if(rev==db[rounds[r].q[p]].a.length)endRound();
+function nextQuestion(){
+q++;
+if(q>=rounds[r].list.length){r++;q=0;}
+if(r>=rounds.length){alert("KONIEC GRY");return;}
+loadQuestion();
 }
 
-function endRound(){
- end.style.display="block";
- document.querySelectorAll(".slot:not(.revealed)").forEach((s,i)=>{
-  s.classList.add("missed");
-  let a=db[rounds[r].q[p]].a[i];
-  s.innerHTML=`${i+1}. ${a[0]}<span>${a[1]}</span>`;
- });
-}
-
-function give(t){
- if(t==1){s1+=bank;s1El.innerText=s1}else{s2+=bank;s2El.innerText=s2}
- document.querySelectorAll(".give").forEach(b=>b.style.display="none");
- document.querySelector(".next").style.display="block";
-}
-
-function next(){
- document.querySelectorAll(".give").forEach(b=>b.style.display="inline-block");
- document.querySelector(".next").style.display="none";
- p++;
- if(p>=rounds[r].q.length){r++;p=0}
- if(r>=rounds.length){
-  alert("KONIEC GRY\nDrużyna 1: "+s1+"\nDrużyna 2: "+s2);
-  location.reload();
- }
- load();
-}
-
-function swap(){
- team=team==1?2:1;
- t1.classList.toggle("active");
- t2.classList.toggle("active");
-}
-
-const board=document.getElementById("board"),
-ans=document.getElementById("ans"),
-strikes=document.getElementById("strikes"),
-bankEl=document.getElementById("bank"),
-end=document.getElementById("end-panel"),
-s1El=document.getElementById("s1"),
-s2El=document.getElementById("s2");
-
-ans.addEventListener("keydown",e=>{if(e.key=="Enter")check()});
-load();
+loadQuestion();
 </script>
+
 </body>
 </html>
