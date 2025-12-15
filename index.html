@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Familiada - Panel Sterowania Rundami</title>
+    <title>Familiada - Panel Sterowania</title>
     <style>
+        /* CSS Panelu Sterowania z drugiego kodu */
         :root {
             --blue: #002266;
             --gold: #ffcc00;
@@ -46,6 +47,7 @@
             text-align: center;
             width: 30%;
             border-radius: 10px;
+            transition: all 0.3s;
         }
 
         .team.active { border-color: var(--green); box-shadow: 0 0 15px var(--green); }
@@ -88,7 +90,7 @@
         }
 
         .revealed { background: #0044cc; color: var(--gold); border-width: 2px; }
-        .missed { color: #666; border-color: #333; }
+        .missed { background: #5a0000; color: #ccc; border-color: var(--red); }
 
         /* Błędy */
         #strikes {
@@ -97,6 +99,7 @@
             text-align: center;
             min-height: 80px;
             letter-spacing: 10px;
+            transition: all 0.3s;
         }
 
         /* Kontrolki */
@@ -113,7 +116,7 @@
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            display: none; /* Ukryte w trakcie gry */
+            display: none; 
         }
 
         .btn-give { background: var(--green); color: white; margin: 5px; }
@@ -150,7 +153,6 @@
         <button class="btn-swap" onclick="toggleTeam()">ZMIANA DRUŻYNY</button>
     </div>
 
-    <!-- Panel po rundzie -->
     <div id="round-actions">
         <p id="round-msg">Runda zakończona! Komu przyznać bank?</p>
         <button class="btn-give" onclick="assignPoints(1)">Drużyna 1</button>
@@ -160,29 +162,64 @@
 </div>
 
 <script>
-    const db = [
-        { q: "Więcej niż jedno zwierzę?", a: [["Owca", 45], ["Lama", 25], ["Stado", 15], ["Para", 10]] },
-        { q: "Część twarzy?", a: [["Nos", 40], ["Oczy", 30], ["Usta", 20], ["Czoło", 5]] },
-        { q: "Rodzaj pieczywa?", a: [["Chleb", 50], ["Bułka", 30], ["Rogal", 10], ["Bagietka", 5]] },
-        { q: "Co jest zimne?", a: [["Lód", 45], ["Śnieg", 25], ["Woda", 15], ["Lody", 10]] },
-        { q: "Kolor na flagę Polski?", a: [["Biały", 50], ["Czerwony", 50]] },
-        { q: "Napój alkoholowy?", a: [["Piwo", 40], ["Wino", 30], ["Wódka", 20], ["Szampan", 5]] },
-        { q: "Miesiąc na literę 'L'?", a: [["Lipiec", 40], ["Luty", 35], ["Listopad", 20]] },
-        { q: "Przedmiot w łazience?", a: [["Szczoteczka", 35], ["Mydło", 25], ["Ręcznik", 20], ["Lustro", 15]] },
-        { q: "Drzewo iglaste?", a: [["Sosna", 40], ["Świerk", 30], ["Jodła", 20], ["Modrzew", 5]] },
-        { q: "Imię żeńskie na 'A'?", a: [["Anna", 45], ["Alicja", 25], ["Agata", 15], ["Agnieszka", 10]] }
+    // ===================== BAZA PYTAŃ Z PIERWSZEGO KODU =====================
+    // Pytania i odpowiedzi zostały przekształcone do formatu [tekst, punkty],
+    // aby pasowały do logiki drugiego kodu.
+
+    const sms = [
+        {q:"Ulubione miejsce w szkole", a:[["Świetlica",43],["Sklepik",28],["Szatnie",17],["Automat",8],["Toaleta",4]]},
+        {q:"Ulubiony nauczyciel", a:[["Andrzej Biel",38],["K. Kołak",23],["M. Ciapka",17],["Sławomir Siekacz",12],["Katarzyna Jarosz",10]]},
+        {q:"Najsurowszy nauczyciel", a:[["Magdalena Studzienny",41],["Wrońska",29],["Paterek",17],["Wiluż",14],["Adamczyk",9]]},
+        {q:"Ulubiony przedmiot uczniów", a:[["Historia / HiT",39],["Angielski",28],["WF",21],["Filozofia",7],["Godzina wychowawcza",4]]},
+        {q:"Najlepsze miejsce na wagary uczniów", a:[["Lidl",36],["Bonarka",25],["McDonald",18],["Żabka",15],["Dom",6]]}
     ];
 
-    let round = 0, score1 = 0, score2 = 0, bank = 0, strikes = 0, revealed = 0, activeTeam = 1;
+    const normal = [
+        {q:"Co zabierasz ze sobą na plażę",a:[["Ręcznik",30],["Krem",20],["Strój kąpielowy",18],["Parasol",12],["Okulary",10],["Piłka",5]]},
+        {q:"Co robisz kiedy nie możesz zasnąć",a:[["Liczę barany",28],["Czytam książkę",22],["TV",18],["Przewracam się",15],["Idę coś zjeść",10],["Słucham muzyki",7]]},
+        {q:"Co można znaleźć w damskiej torebce",a:[["Portfel",35],["Klucze",25],["Telefon",20],["Pomadka",10],["Chusteczki",8],["Lustereczko",2]]},
+        {q:"Jakie zwierzę hoduje się w domu",a:[["Pies",40],["Kot",35],["Rybki",10],["Papuga",8],["Królik",5]]},
+        {q:"Jakie warzywo rośnie pod ziemią",a:[["Ziemniak",45],["Marchewka",25],["Burak",15],["Pietruszka",10],["Seler",5]]},
+        {q:"Co można znaleźć w kuchni",a:[["Lodówka",30],["Kuchenka",25],["Garnek",20],["Nóż",15],["Talerze",10]]},
+        {q:"Co robisz zaraz po przebudzeniu",a:[["Myję zęby",25],["Wstaję z łóżka",22],["Idę do łazienki",18],["Jem śniadanie",15],["Sprawdzam telefon",12],["Przeciągam się",8]]},
+        {q:"Co można zobaczyć w zoo",a:[["Słoń",30],["Lew",25],["Małpa",20],["Żyrafa",15],["Tygrys",10]]},
+        {q:"Z czym kojarzy się wieś",a:[["Krowy",25],["Traktor",22],["Kogut",18],["Pole",15],["Zapach obornika",10],["Spokój",8]]},
+        {q:"Co robisz w wolny weekend",a:[["Śpię",30],["Oglądam telewizję",20],["Wycieczka",18],["Spotykam się ze znajomymi",15],["Sprzątam",10],["Grilluję",7]]}
+    ];
+
+    // Struktura rundy z pierwszego kodu
+    const roundsDefinitions = [
+        {name:"Pojedynek 1",questions:[normal[0],normal[1],sms[0]]},
+        {name:"Pojedynek 2",questions:[normal[2],normal[3],sms[1]]},
+        {name:"Pojedynek 3",questions:[normal[4],normal[5],sms[2]]},
+        {name:"Pojedynek 4",questions:[normal[6],normal[7],sms[3]]},
+        {name:"Pojedynek 5",questions:[normal[8],normal[9],sms[4]]},
+        {name:"Półfinał 1",questions:[normal[0],normal[2]]},
+        {name:"Półfinał 2",questions:[normal[3],normal[4]]}
+    ];
+
+    // Pełna płaska lista pytań, używana do indeksowania rund
+    let allQuestions = [];
+    roundsDefinitions.forEach(r => {
+        r.questions.forEach(q => allQuestions.push(q));
+    });
+
+    let currentQuestionIndex = 0; // Zastępuje `round` z poprzedniej logiki
+    let score1 = 0, score2 = 0, bank = 0, strikes = 0, revealed = 0, activeTeam = 1;
+
+    // ===================== LOGIKA GRY Z DRUGIEGO KODU (Dostosowana) =====================
 
     function initRound() {
-        const data = db[round];
-        document.getElementById('question-display').innerText = `RUNDA ${round+1}: ${data.q}`;
+        const data = allQuestions[currentQuestionIndex];
+        const currentRoundName = roundsDefinitions.find(r => r.questions.includes(data)).name; // Znajdowanie nazwy bieżącej rundy
+        
+        document.getElementById('question-display').innerText = `${currentRoundName} - PYTANIE: ${data.q}`;
         document.getElementById('board').innerHTML = '';
         document.getElementById('strikes').innerText = '';
         document.getElementById('round-actions').style.display = 'none';
         document.getElementById('next-round-btn').style.display = 'none';
         document.getElementById('game-inputs').style.opacity = '1';
+        document.getElementById('ans-input').value = ''; 
         bank = 0; strikes = 0; revealed = 0;
         document.getElementById('bank-val').innerText = 0;
 
@@ -190,19 +227,23 @@
             const div = document.createElement('div');
             div.className = 'slot';
             div.id = `s-${i}`;
-            div.innerHTML = `<span>${i+1}. ....................</span><span>--</span>`;
+            // item[0] to tekst, item[1] to punkty
+            div.innerHTML = `<span>${i+1}. ....................</span><span>--</span>`; 
             document.getElementById('board').appendChild(div);
         });
     }
 
     function checkAns() {
+        if (document.getElementById('round-actions').style.display === 'block') return; // Blokada wejścia po zakończeniu rundy
         const inp = document.getElementById('ans-input');
         const val = inp.value.trim().toLowerCase();
         inp.value = '';
         if (!val) return;
 
         let found = false;
-        db[round].a.forEach((ans, i) => {
+        const currentAnswers = allQuestions[currentQuestionIndex].a;
+
+        currentAnswers.forEach((ans, i) => {
             if (ans[0].toLowerCase() === val) {
                 const s = document.getElementById(`s-${i}`);
                 if (!s.classList.contains('revealed')) {
@@ -212,7 +253,10 @@
                     document.getElementById('bank-val').innerText = bank;
                     revealed++;
                     found = true;
-                } else found = true;
+                } else {
+                    // Odpowiedź już odkryta, ale jest poprawna, więc nie ma błędu
+                    found = true; 
+                }
             }
         });
 
@@ -220,7 +264,9 @@
             strikes++;
             document.getElementById('strikes').innerText = 'X '.repeat(strikes);
             if (strikes >= 3) finishRoundView();
-        } else if (revealed === db[round].a.length) {
+        } 
+        
+        if (revealed === currentAnswers.length) {
             finishRoundView();
         }
     }
@@ -229,10 +275,12 @@
         // Pokaż panel przyznawania punktów i odkryj brakujące odpowiedzi
         document.getElementById('round-actions').style.display = 'block';
         document.getElementById('game-inputs').style.opacity = '0.3';
-        db[round].a.forEach((ans, i) => {
+        
+        const currentAnswers = allQuestions[currentQuestionIndex].a;
+        currentAnswers.forEach((ans, i) => {
             const s = document.getElementById(`s-${i}`);
             if (!s.classList.contains('revealed')) {
-                s.className = 'slot missed';
+                s.className = 'slot missed'; // Użycie nowej klasy missed
                 s.innerHTML = `<span>${i+1}. ${ans[0]}</span><span>${ans[1]}</span>`;
             }
         });
@@ -244,19 +292,19 @@
         document.getElementById('score1').innerText = score1;
         document.getElementById('score2').innerText = score2;
         
-        document.getElementById('round-msg').innerText = "Punkty przyznane. Możesz przejść dalej.";
+        document.getElementById('round-msg').innerText = `Punkty z banku (${bank}) przyznane Drużynie ${team}. Możesz przejść dalej.`;
         document.querySelectorAll('.btn-give').forEach(b => b.style.display = 'none');
         document.getElementById('next-round-btn').style.display = 'block';
     }
 
     function goToNextRound() {
-        round++;
-        if (round < db.length) {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < allQuestions.length) {
             document.querySelectorAll('.btn-give').forEach(b => b.style.display = 'inline-block');
             document.getElementById('round-msg').innerText = "Runda zakończona! Komu przyznać bank?";
             initRound();
         } else {
-            alert("KONIEC TURNIEJU! Wyniki: Drużyna 1: " + score1 + " pkt, Drużyna 2: " + score2 + " pkt");
+            alert(`KONIEC TURNIEJU! Wyniki: Drużyna 1: ${score1} pkt, Drużyna 2: ${score2} pkt`);
             location.reload();
         }
     }
