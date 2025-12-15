@@ -6,83 +6,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-:root {
-  --blue:#002266;
-  --gold:#ffcc00;
-  --green:#2ecc71;
-  --red:#e74c3c;
-}
-body{
-  margin:0;
-  background:#111;
-  color:white;
-  font-family:Segoe UI,Arial,sans-serif;
-  display:flex;
-  justify-content:center;
-  padding:20px;
-}
-#game{
-  max-width:900px;
-  width:100%;
-  background:var(--blue);
-  border-radius:20px;
-  padding:20px;
-  border:8px solid #333;
-}
-.header{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:15px;
-}
-.team{
-  width:30%;
-  background:#001133;
-  text-align:center;
-  border-radius:10px;
-  padding:10px;
-  border:3px solid #444;
-}
-.team.active{border-color:var(--green);box-shadow:0 0 15px var(--green);}
-.score{font-size:2.5rem;color:var(--gold);}
-.bank{text-align:center;border:2px dashed var(--gold);padding:10px;border-radius:10px;}
-#round-title{text-align:center;font-size:1.3rem;margin:10px 0;}
-#question{text-align:center;font-size:1.5rem;margin-bottom:15px;}
-.board{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.slot{
-  background:#001a4d;
-  border:1px solid var(--gold);
-  padding:10px 15px;
-  display:flex;
-  justify-content:space-between;
-}
-.revealed{background:#0044cc;color:var(--gold);font-weight:bold;}
+:root{--blue:#002266;--gold:#ffcc00;--green:#2ecc71;--red:#e74c3c}
+body{margin:0;background:#111;color:#fff;font-family:Segoe UI,Arial,sans-serif;display:flex;justify-content:center;padding:20px}
+#game{max-width:900px;width:100%;background:var(--blue);border-radius:20px;padding:20px;border:8px solid #333}
+.header{display:flex;justify-content:space-between;margin-bottom:15px}
+.team{width:30%;background:#001133;text-align:center;border-radius:10px;padding:10px;border:3px solid #444}
+.team.active{border-color:var(--green);box-shadow:0 0 15px var(--green)}
+.score{font-size:2.5rem;color:var(--gold)}
+.bank{text-align:center;border:2px dashed var(--gold);padding:10px;border-radius:10px}
+#round-title{text-align:center;font-size:1.3rem;margin:10px 0}
+#question{text-align:center;font-size:1.5rem;margin-bottom:15px}
+.board{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.slot{background:#001a4d;border:1px solid var(--gold);padding:10px 15px;display:flex;justify-content:space-between}
+.revealed{background:#0044cc;color:var(--gold);font-weight:bold}
 .missed{opacity:.5}
-#strikes{
-  text-align:center;
-  font-size:3rem;
-  color:var(--red);
-  min-height:60px;
-}
-.controls{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
-}
-input{flex:1;padding:12px;font-size:1.1rem;}
-button{padding:12px 15px;font-weight:bold;border:none;cursor:pointer;}
-.ok{background:var(--gold);}
-.swap{background:#9b59b6;color:white;}
-#end-panel{
-  display:none;
-  text-align:center;
-  margin-top:15px;
-}
-.give{background:var(--green);color:white;margin:5px;}
-.next{background:#3498db;color:white;width:100%;font-size:1.4rem;display:none;}
+#strikes{text-align:center;font-size:3rem;color:var(--red);min-height:60px}
+.controls{display:flex;gap:10px;margin-top:15px}
+input{flex:1;padding:12px;font-size:1.1rem}
+button{padding:12px 15px;font-weight:bold;border:none;cursor:pointer}
+.ok{background:var(--gold)}
+.swap{background:#9b59b6;color:white}
+#end-panel{display:none;text-align:center;margin-top:15px}
+.give{background:var(--green);color:white;margin:5px}
+.next{background:#3498db;color:white;width:100%;font-size:1.4rem;display:none}
+.sms{color:#ff8080;font-weight:bold}
 </style>
 </head>
 
@@ -118,45 +65,56 @@ button{padding:12px 15px;font-weight:bold;border:none;cursor:pointer;}
 <script>
 // ================= PYTANIA =================
 const db = [
-{q:"Ulubione miejsce w szkole?",a:[["Świetlica",43],["Sklepik",28],["Szatnie",17],["Automat",8],["Toaleta",4]]},
-{q:"Ulubiony nauczyciel?",a:[["Andrzej Biel",38],["K. Kołak",23],["M. Ciapka",17],["Sławomir Siekacz",12],["Katarzyna Jarosz-Dopierała",10]]},
-{q:"Najlepsze miejsce na wagary SMS?",a:[["Lidl",36],["Bonarka",25],["McDonald",18],["Żabka",15],["Dom",6]]},
+  // POJEDYNEK 1
+  {q:"Ulubione miejsce w szkole?",sms:false,a:[["Świetlica",43],["Sklepik",28],["Szatnie",17],["Automat",8],["Toaleta",4]]},
+  {q:"Ulubiony nauczyciel?",sms:false,a:[["Andrzej Biel",38],["K. Kołak",23],["M. Ciapka",17],["S. Siekacz",12],["K. Jarosz-Dopierała",10]]},
+  {q:"[SMS] Najlepsze miejsce na wagary uczniów?",sms:true,a:[["Lidl",36],["Bonarka",25],["McDonald",18],["Żabka",15],["Dom",6]]},
 
-{q:"Ulubiony przedmiot uczniów?",a:[["Historia/HiT",39],["Angielski",28],["WF",21],["Filozofia",7],["Godzina wychowawcza",4]]},
-{q:"Najsurowszy nauczyciel?",a:[["Studzienny",41],["Wrońska",29],["Paterek",17],["Wiluż",14],["Adamczyk",9]]},
-{q:"Nauczyciel z najdłuższym stażem SMS?",a:[["Czupryna",33],["Chromniak",27],["Studzienny",18],["Siekacz",14],["Wirga",8]]},
+  // POJEDYNEK 2
+  {q:"Ulubiony przedmiot uczniów?",sms:false,a:[["Historia/HiT",39],["Angielski",28],["WF",21],["Filozofia",7],["Godzina wychowawcza",4]]},
+  {q:"Najsurowszy nauczyciel?",sms:false,a:[["Studzienny",41],["Wrońska",29],["Paterek",17],["Wiluż",14],["Adamczyk",9]]},
+  {q:"[SMS] Nauczyciel z najdłuższym stażem?",sms:true,a:[["Czupryna",33],["Chromniak",27],["Studzienny",18],["Siekacz",14],["Wirga",8]]},
 
-{q:"Co można znaleźć w łazience?",a:[["Wanna",30],["Mydło",25],["Ręcznik",20],["Lustro",15],["Szczoteczka",10]]},
-{q:"Z czym kojarzy się szkoła?",a:[["Nauczyciel",25],["Lekcje",20],["Tablica",18],["Zeszyty",15],["Uczniowie",10]]},
-{q:"Z czym kojarzy się szkoła SMS?",a:[["Matura",30],["Nauczyciele",25],["Uczniowie",20],["Zajęcia",15],["Egzaminy",10]]},
+  // POJEDYNEK 3
+  {q:"Co można znaleźć w łazience?",sms:false,a:[["Wanna",30],["Mydło",25],["Ręcznik",20],["Lustro",15],["Szczoteczka",10]]},
+  {q:"Z czym kojarzy się szkoła?",sms:false,a:[["Nauczyciel",25],["Lekcje",20],["Tablica",18],["Zeszyty",15],["Uczniowie",10]]},
+  {q:"[SMS] Z czym kojarzy się szkoła średnia?",sms:true,a:[["Matura",30],["Nauczyciele",25],["Uczniowie",20],["Zajęcia",15],["Egzaminy",10]]},
 
-{q:"Co można znaleźć w kuchni?",a:[["Lodówka",30],["Kuchenka",25],["Garnek",20],["Nóż",15],["Talerze",10]]},
-{q:"Co można robić w parku?",a:[["Spacerować",30],["Karmić ptaki",20],["Biegać",18],["Ławka",15],["Piknik",10]]},
-{q:"Najlepsze wagary SMS?",a:[["Lidl",36],["Bonarka",25],["McDonald",18],["Żabka",15],["Dom",6]]},
+  // POJEDYNEK 4
+  {q:"Co można znaleźć w kuchni?",sms:false,a:[["Lodówka",30],["Kuchenka",25],["Garnek",20],["Nóż",15],["Talerze",10]]},
+  {q:"Co można robić w parku?",sms:false,a:[["Spacerować",30],["Karmić ptaki",20],["Biegać",18],["Siedzieć",15],["Piknik",10]]},
+  {q:"[SMS] Najlepsze wagary uczniów?",sms:true,a:[["Lidl",36],["Bonarka",25],["McDonald",18],["Żabka",15],["Dom",6]]},
 
-// półfinały
-{q:"Co można robić zimą?",a:[["Narty",25],["Bałwan",20],["Śnieżki",18],["Sanki",15],["Herbata",10]]},
-{q:"Co zabierasz na plażę?",a:[["Ręcznik",30],["Krem",20],["Strój",18],["Parasol",12],["Okulary",10]]}
+  // POJEDYNEK 5
+  {q:"Co można robić zimą?",sms:false,a:[["Narty",25],["Bałwan",20],["Śnieżki",18],["Sanki",15],["Herbata",10]]},
+  {q:"Co zabierasz na plażę?",sms:false,a:[["Ręcznik",30],["Krem",20],["Strój",18],["Parasol",12],["Okulary",10]]},
+  {q:"[SMS] Co robisz w weekend majowy?",sms:true,a:[["Grilluję",30],["Działka",25],["Odpoczywam",20],["Wyjazd",15],["Znajomi",10]]},
+
+  // PÓŁFINAŁY
+  {q:"Co można robić zimą?",sms:false,a:[["Narty",25],["Bałwan",20],["Śnieżki",18],["Sanki",15],["Herbata",10]]},
+  {q:"Co zabierasz na plażę?",sms:false,a:[["Ręcznik",30],["Krem",20],["Strój",18],["Parasol",12],["Okulary",10]]},
+  {q:"Co można znaleźć w kuchni?",sms:false,a:[["Lodówka",30],["Kuchenka",25],["Garnek",20],["Nóż",15],["Talerze",10]]},
+  {q:"Co można robić w parku?",sms:false,a:[["Spacerować",30],["Karmić ptaki",20],["Biegać",18],["Siedzieć",15],["Piknik",10]]}
 ];
 
-// ====== STRUKTURA RUND ======
+// ================= STRUKTURA =================
 const rounds = [
-{title:"POJEDYNEK 1",q:[0,1,2]},
-{title:"POJEDYNEK 2",q:[3,4,5]},
-{title:"POJEDYNEK 3",q:[6,7,8]},
-{title:"POJEDYNEK 4",q:[9,10,11]},
-{title:"POJEDYNEK 5",q:[12,13,14]},
-{title:"PÓŁFINAŁ 1",q:[15,16]},
-{title:"PÓŁFINAŁ 2",q:[17,18]}
+  {title:"POJEDYNEK 1",q:[0,1,2]},
+  {title:"POJEDYNEK 2",q:[3,4,5]},
+  {title:"POJEDYNEK 3",q:[6,7,8]},
+  {title:"POJEDYNEK 4",q:[9,10,11]},
+  {title:"POJEDYNEK 5",q:[12,13,14]},
+  {title:"PÓŁFINAŁ 1",q:[15,16]},
+  {title:"PÓŁFINAŁ 2",q:[17,18]}
 ];
 
-// ====== LOGIKA ======
+// ================= LOGIKA =================
 let r=0,p=0,bank=0,str=0,rev=0,team=1,s1=0,s2=0;
 
 function load(){
  const d=db[rounds[r].q[p]];
  document.getElementById("round-title").innerText=rounds[r].title+" – pytanie "+(p+1);
- document.getElementById("question").innerText=d.q;
+ document.getElementById("question").innerHTML=d.sms?`<span class="sms">PYTANIE SMS</span><br>${d.q}`:d.q;
  board.innerHTML="";strikes.innerText="";
  bank=0;rev=0;str=0;bankEl.innerText=0;
  d.a.forEach((x,i)=>{
@@ -184,10 +142,7 @@ function check(){
    f=true;
   }
  });
- if(!f){
-  str++;strikes.innerText="X ".repeat(str);
-  if(str>=3)endRound();
- }
+ if(!f){str++;strikes.innerText="X ".repeat(str);if(str>=3)endRound()}
  if(rev==db[rounds[r].q[p]].a.length)endRound();
 }
 
