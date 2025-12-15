@@ -3,199 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Familiada - Dynamiczna Wersja</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <title>Familiada - Panel Sterowania</title>
     <style>
+        /* CSS Panelu Sterowania z drugiego kodu */
         :root {
-            --primary-blue: #1abc9c; /* Turkusowy */
-            --secondary-gold: #f39c12; /* Złoty/Pomarańczowy */
-            --dark-bg: #2c3e50; /* Ciemny Granat */
-            --light-text: #ecf0f1; /* Jasnoszary */
+            --blue: #002266;
+            --gold: #ffcc00;
+            --green: #27ae60;
+            --red: #e74c3c;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--light-text);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #121212;
+            color: white;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
             padding: 20px;
+            margin: 0;
         }
 
         #game-container {
             width: 100%;
             max-width: 900px;
-            background-color: #34495e; /* Ciemniejszy panel */
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            padding: 30px;
-            text-align: center;
+            background: var(--blue);
+            border: 10px solid #333;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
         }
 
-        h1 {
-            font-family: 'Oswald', sans-serif;
-            color: var(--secondary-gold);
-            text-transform: uppercase;
-            font-size: 3em;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        #question {
-            background-color: var(--primary-blue);
-            color: var(--dark-bg);
-            font-size: 1.8em;
-            font-weight: bold;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            min-height: 1.2em;
-        }
-
-        /* Styl tablicy z odpowiedziami */
-        #board {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .answer-slot {
-            background: #4a6783; /* Tło slotu */
-            border: 3px solid var(--secondary-gold);
-            height: 60px;
+        /* Punkty i Drużyny */
+        .header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 1.2em;
-            font-weight: 700;
-            text-transform: uppercase;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
-        }
-
-        .answer-slot:not(.revealed) {
-            cursor: pointer; /* Dodano, aby zasugerować klikalność, choć obsługa jest przez input */
-        }
-        
-        .answer-slot.revealed {
-            background: #e67e22; /* Kolor odkrytej odpowiedzi */
-        }
-
-        .points { 
-            color: var(--secondary-gold); 
-            font-size: 1.5em;
-            font-family: 'Oswald', sans-serif;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Panel dolny */
-        #controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
             margin-bottom: 20px;
         }
 
-        input {
-            padding: 12px;
-            font-size: 1.1em;
-            border-radius: 8px;
-            border: none;
-            width: 300px;
-            background-color: var(--light-text);
-            color: var(--dark-bg);
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        .team {
+            background: #001133;
+            border: 3px solid #444;
+            padding: 15px;
+            text-align: center;
+            width: 30%;
+            border-radius: 10px;
+            transition: all 0.3s;
         }
 
-        button {
-            padding: 12px 25px;
-            font-size: 1.1em;
-            background-color: var(--secondary-gold);
-            color: var(--dark-bg);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
+        .team.active { border-color: var(--green); box-shadow: 0 0 15px var(--green); }
+        .score { font-size: 2.5rem; color: var(--gold); font-weight: bold; }
 
-        button:hover { background-color: #e8a044; }
-
-        /* X - błędy */
-        #strikes {
-            font-size: 3.5em;
-            color: #e74c3c; /* Czerwień */
-            height: 60px;
-            font-weight: 700;
-            letter-spacing: 5px;
-            margin-bottom: 10px;
-        }
-
-        #score-board {
-            font-size: 1.5em;
-            color: var(--primary-blue);
-            background-color: #4a6783;
+        .bank-area {
+            text-align: center;
+            border: 2px dashed var(--gold);
             padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
-            margin-top: 10px;
-            font-family: 'Oswald', sans-serif;
+            border-radius: 10px;
         }
-        #total-score {
-            color: var(--secondary-gold);
+
+        /* Tablica i Pytanie */
+        .question {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            border-radius: 5px;
         }
+
+        .board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .slot {
+            background: #001a4d;
+            border: 1px solid var(--gold);
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+        }
+
+        .revealed { background: #0044cc; color: var(--gold); border-width: 2px; }
+        .missed { background: #5a0000; color: #ccc; border-color: var(--red); }
+
+        /* Błędy */
+        #strikes {
+            font-size: 4rem;
+            color: var(--red);
+            text-align: center;
+            min-height: 80px;
+            letter-spacing: 10px;
+            transition: all 0.3s;
+        }
+
+        /* Kontrolki */
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 15px; font-size: 1.2rem; border-radius: 5px; border: none; }
+        button { padding: 15px 20px; cursor: pointer; font-weight: bold; border-radius: 5px; border: none; }
+        
+        .btn-ok { background: var(--gold); color: black; }
+        .btn-swap { background: #9b59b6; color: white; }
+
+        /* Zarządzanie Rundą */
+        #round-actions {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none; 
+        }
+
+        .btn-give { background: var(--green); color: white; margin: 5px; }
+        .btn-next { background: #3498db; color: white; display: none; margin-top: 10px; width: 100%; font-size: 1.5rem; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h1>Familiada</h1>
-    <div id="question">Pytanie...</div>
-    
-    <div id="board">
+    <div class="header">
+        <div id="team1-box" class="team active">
+            DRUŻYNA 1
+            <div id="score1" class="score">0</div>
         </div>
+        <div class="bank-area">
+            BANK<br>
+            <span id="bank-val" class="score" style="font-size: 1.8rem;">0</span>
+        </div>
+        <div id="team2-box" class="team">
+            DRUŻYNA 2
+            <div id="score2" class="score">0</div>
+        </div>
+    </div>
+
+    <div id="question-display" class="question">Ładowanie rundy...</div>
+
+    <div id="board" class="board"></div>
 
     <div id="strikes"></div>
 
-    <div id="controls">
-        <input type="text" id="answer-input" placeholder="Wpisz odpowiedź..." autocomplete="off">
-        <button onclick="handleGuess()">Zatwierdź</button>
+    <div class="controls" id="game-inputs">
+        <input type="text" id="ans-input" placeholder="Wpisz odpowiedź...">
+        <button class="btn-ok" onclick="checkAns()">ZATWIERDŹ</button>
+        <button class="btn-swap" onclick="toggleTeam()">ZMIANA DRUŻYNY</button>
     </div>
 
-    <div id="score-board">Suma punktów: <span id="total-score">0</span></div>
+    <div id="round-actions">
+        <p id="round-msg">Runda zakończona! Komu przyznać bank?</p>
+        <button class="btn-give" onclick="assignPoints(1)">Drużyna 1</button>
+        <button class="btn-give" onclick="assignPoints(2)">Drużyna 2</button>
+        <button class="btn-next" id="next-round-btn" onclick="goToNextRound()">NASTĘPNA RUNDA ➔</button>
+    </div>
 </div>
 
 <script>
-    // ===================== PYTANIA (BEZ ZMIAN) =====================
+    // ===================== BAZA PYTAŃ Z PIERWSZEGO KODU =====================
+    // Pytania i odpowiedzi zostały przekształcone do formatu [tekst, punkty],
+    // aby pasowały do logiki drugiego kodu.
+
     const sms = [
-        {q:"Ulubione miejsce w szkole", a:[{text:"Świetlica",pts:43},{text:"Sklepik",pts:28},{text:"Szatnie",pts:17},{text:"Automat",pts:8},{text:"Toaleta",pts:4}]},
-        {q:"Ulubiony nauczyciel", a:[{text:"Andrzej Biel",pts:38},{text:"K. Kołak",pts:23},{text:"M. Ciapka",pts:17},{text:"Sławomir Siekacz",pts:12},{text:"Katarzyna Jarosz",pts:10}]},
-        {q:"Najsurowszy nauczyciel", a:[{text:"Magdalena Studzienny",pts:41},{text:"Wrońska",pts:29},{text:"Paterek",pts:17},{text:"Wiluż",pts:14},{text:"Adamczyk",pts:9}]},
-        {q:"Ulubiony przedmiot uczniów", a:[{text:"Historia / HiT",pts:39},{text:"Angielski",pts:28},{text:"WF",pts:21},{text:"Filozofia",pts:7},{text:"Godzina wychowawcza",pts:4}]},
-        {q:"Najlepsze miejsce na wagary uczniów", a:[{text:"Lidl",pts:36},{text:"Bonarka",pts:25},{text:"McDonald",pts:18},{text:"Żabka",pts:15},{text:"Dom",pts:6}]}
+        {q:"Ulubione miejsce w szkole", a:[["Świetlica",43],["Sklepik",28],["Szatnie",17],["Automat",8],["Toaleta",4]]},
+        {q:"Ulubiony nauczyciel", a:[["Andrzej Biel",38],["K. Kołak",23],["M. Ciapka",17],["Sławomir Siekacz",12],["Katarzyna Jarosz",10]]},
+        {q:"Najsurowszy nauczyciel", a:[["Magdalena Studzienny",41],["Wrońska",29],["Paterek",17],["Wiluż",14],["Adamczyk",9]]},
+        {q:"Ulubiony przedmiot uczniów", a:[["Historia / HiT",39],["Angielski",28],["WF",21],["Filozofia",7],["Godzina wychowawcza",4]]},
+        {q:"Najlepsze miejsce na wagary uczniów", a:[["Lidl",36],["Bonarka",25],["McDonald",18],["Żabka",15],["Dom",6]]}
     ];
 
     const normal = [
-        {q:"Co zabierasz ze sobą na plażę",a:[{text:"Ręcznik",pts:30},{text:"Krem",pts:20},{text:"Strój kąpielowy",pts:18},{text:"Parasol",pts:12},{text:"Okulary",pts:10},{text:"Piłka",pts:5}]},
-        {q:"Co robisz kiedy nie możesz zasnąć",a:[{text:"Liczę barany",pts:28},{text:"Czytam książkę",pts:22},{text:"TV",pts:18},{text:"Przewracam się",pts:15},{text:"Idę coś zjeść",pts:10},{text:"Słucham muzyki",pts:7}]},
-        {q:"Co można znaleźć w damskiej torebce",a:[{text:"Portfel",pts:35},{text:"Klucze",pts:25},{text:"Telefon",pts:20},{text:"Pomadka",pts:10},{text:"Chusteczki",pts:8},{text:"Lustereczko",pts:2}]},
-        {q:"Jakie zwierzę hoduje się w domu",a:[{text:"Pies",pts:40},{text:"Kot",pts:35},{text:"Rybki",pts:10},{text:"Papuga",pts:8},{text:"Królik",pts:5}]},
-        {q:"Jakie warzywo rośnie pod ziemią",a:[{text:"Ziemniak",pts:45},{text:"Marchewka",pts:25},{text:"Burak",pts:15},{text:"Pietruszka",pts:10},{text:"Seler",pts:5}]},
-        {q:"Co można znaleźć w kuchni",a:[{text:"Lodówka",pts:30},{text:"Kuchenka",pts:25},{text:"Garnek",pts:20},{text:"Nóż",pts:15},{text:"Talerze",pts:10}]},
-        {q:"Co robisz zaraz po przebudzeniu",a:[{text:"Myję zęby",pts:25},{text:"Wstaję z łóżka",pts:22},{text:"Idę do łazienki",pts:18},{text:"Jem śniadanie",pts:15},{text:"Sprawdzam telefon",pts:12},{text:"Przeciągam się",pts:8}]},
-        {q:"Co można zobaczyć w zoo",a:[{text:"Słoń",pts:30},{text:"Lew",pts:25},{text:"Małpa",pts:20},{text:"Żyrafa",pts:15},{text:"Tygrys",pts:10}]},
-        {q:"Z czym kojarzy się wieś",a:[{text:"Krowy",pts:25},{text:"Traktor",pts:22},{text:"Kogut",pts:18},{text:"Pole",pts:15},{text:"Zapach obornika",pts:10},{text:"Spokój",pts:8}]},
-        {q:"Co robisz w wolny weekend",a:[{text:"Śpię",pts:30},{text:"Oglądam telewizję",pts:20},{text:"Wycieczka",pts:18},{text:"Spotykam się ze znajomymi",pts:15},{text:"Sprzątam",pts:10},{text:"Grilluję",pts:7}]}
+        {q:"Co zabierasz ze sobą na plażę",a:[["Ręcznik",30],["Krem",20],["Strój kąpielowy",18],["Parasol",12],["Okulary",10],["Piłka",5]]},
+        {q:"Co robisz kiedy nie możesz zasnąć",a:[["Liczę barany",28],["Czytam książkę",22],["TV",18],["Przewracam się",15],["Idę coś zjeść",10],["Słucham muzyki",7]]},
+        {q:"Co można znaleźć w damskiej torebce",a:[["Portfel",35],["Klucze",25],["Telefon",20],["Pomadka",10],["Chusteczki",8],["Lustereczko",2]]},
+        {q:"Jakie zwierzę hoduje się w domu",a:[["Pies",40],["Kot",35],["Rybki",10],["Papuga",8],["Królik",5]]},
+        {q:"Jakie warzywo rośnie pod ziemią",a:[["Ziemniak",45],["Marchewka",25],["Burak",15],["Pietruszka",10],["Seler",5]]},
+        {q:"Co można znaleźć w kuchni",a:[["Lodówka",30],["Kuchenka",25],["Garnek",20],["Nóż",15],["Talerze",10]]},
+        {q:"Co robisz zaraz po przebudzeniu",a:[["Myję zęby",25],["Wstaję z łóżka",22],["Idę do łazienki",18],["Jem śniadanie",15],["Sprawdzam telefon",12],["Przeciągam się",8]]},
+        {q:"Co można zobaczyć w zoo",a:[["Słoń",30],["Lew",25],["Małpa",20],["Żyrafa",15],["Tygrys",10]]},
+        {q:"Z czym kojarzy się wieś",a:[["Krowy",25],["Traktor",22],["Kogut",18],["Pole",15],["Zapach obornika",10],["Spokój",8]]},
+        {q:"Co robisz w wolny weekend",a:[["Śpię",30],["Oglądam telewizję",20],["Wycieczka",18],["Spotykam się ze znajomymi",15],["Sprzątam",10],["Grilluję",7]]}
     ];
 
-    const rounds = [
+    // Struktura rundy z pierwszego kodu
+    const roundsDefinitions = [
         {name:"Pojedynek 1",questions:[normal[0],normal[1],sms[0]]},
         {name:"Pojedynek 2",questions:[normal[2],normal[3],sms[1]]},
         {name:"Pojedynek 3",questions:[normal[4],normal[5],sms[2]]},
@@ -205,118 +198,128 @@
         {name:"Półfinał 2",questions:[normal[3],normal[4]]}
     ];
 
-    // ===================== LOGIKA GRY (BEZ ZMIAN) =====================
-    let currentRound = 0;
-    let currentQuestion = 0;
-    let score = 0;
-    let strikes = 0;
-    let revealed = 0;
+    // Pełna płaska lista pytań, używana do indeksowania rund
+    let allQuestions = [];
+    roundsDefinitions.forEach(r => {
+        r.questions.forEach(q => allQuestions.push(q));
+    });
 
-    const questionEl = document.getElementById('question');
-    const boardEl = document.getElementById('board');
-    const inputEl = document.getElementById('answer-input');
-    const strikesEl = document.getElementById('strikes');
-    const totalScoreEl = document.getElementById('total-score');
+    let currentQuestionIndex = 0; // Zastępuje `round` z poprzedniej logiki
+    let score1 = 0, score2 = 0, bank = 0, strikes = 0, revealed = 0, activeTeam = 1;
+
+    // ===================== LOGIKA GRY Z DRUGIEGO KODU (Dostosowana) =====================
 
     function initRound() {
-        // Dodano reset inputu przy nowym pytaniu
-        inputEl.value = ''; 
+        const data = allQuestions[currentQuestionIndex];
+        const currentRoundName = roundsDefinitions.find(r => r.questions.includes(data)).name; // Znajdowanie nazwy bieżącej rundy
+        
+        document.getElementById('question-display').innerText = `${currentRoundName} - PYTANIE: ${data.q}`;
+        document.getElementById('board').innerHTML = '';
+        document.getElementById('strikes').innerText = '';
+        document.getElementById('round-actions').style.display = 'none';
+        document.getElementById('next-round-btn').style.display = 'none';
+        document.getElementById('game-inputs').style.opacity = '1';
+        document.getElementById('ans-input').value = ''; 
+        bank = 0; strikes = 0; revealed = 0;
+        document.getElementById('bank-val').innerText = 0;
 
-        const data = rounds[currentRound].questions[currentQuestion];
-        questionEl.innerText = data.q;
-        boardEl.innerHTML = '';
-        strikes = 0;
-        revealed = 0;
-        strikesEl.innerText = '';
-
-        data.a.forEach((ans,index)=>{
-            const div=document.createElement('div');
-            div.className='answer-slot';
-            div.id=`slot-${index}`;
-            // Uproszczony widok ukrytej odpowiedzi
-            div.innerHTML=`<span>${index+1}. ? ? ? ? ? ? ? ? ?</span> <span class="points">--</span>`; 
-            boardEl.appendChild(div);
+        data.a.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'slot';
+            div.id = `s-${i}`;
+            // item[0] to tekst, item[1] to punkty
+            div.innerHTML = `<span>${i+1}. ....................</span><span>--</span>`; 
+            document.getElementById('board').appendChild(div);
         });
     }
 
-    function handleGuess() {
-        const guess = inputEl.value.trim().toLowerCase();
-        inputEl.value='';
-        if(!guess) return;
+    function checkAns() {
+        if (document.getElementById('round-actions').style.display === 'block') return; // Blokada wejścia po zakończeniu rundy
+        const inp = document.getElementById('ans-input');
+        const val = inp.value.trim().toLowerCase();
+        inp.value = '';
+        if (!val) return;
 
-        const data = rounds[currentRound].questions[currentQuestion];
-        let found=false;
+        let found = false;
+        const currentAnswers = allQuestions[currentQuestionIndex].a;
 
-        // Iteracja i sprawdzenie odpowiedzi
-        data.a.forEach((ans,index)=>{
-            if(ans.text.toLowerCase()===guess){
-                const slot=document.getElementById(`slot-${index}`);
-                if(!slot.classList.contains('revealed')){
-                    slot.classList.add('revealed');
-                    // Wyświetlenie pełnej odpowiedzi i punktów
-                    slot.innerHTML=`<span>${index+1}. ${ans.text}</span> <span class="points">${ans.pts}</span>`;
-                    score+=ans.pts;
-                    totalScoreEl.innerText=score;
+        currentAnswers.forEach((ans, i) => {
+            if (ans[0].toLowerCase() === val) {
+                const s = document.getElementById(`s-${i}`);
+                if (!s.classList.contains('revealed')) {
+                    s.classList.add('revealed');
+                    s.innerHTML = `<span>${i+1}. ${ans[0]}</span><span>${ans[1]}</span>`;
+                    bank += ans[1];
+                    document.getElementById('bank-val').innerText = bank;
                     revealed++;
+                    found = true;
+                } else {
+                    // Odpowiedź już odkryta, ale jest poprawna, więc nie ma błędu
+                    found = true; 
                 }
-                found=true;
             }
         });
 
-        // Obsługa pomyłki (strikes)
-        if(!found){
+        if (!found) {
             strikes++;
-            strikesEl.innerText='❌ '.repeat(strikes); // Nowa, lepsza ikona
-        }
-
-        checkRoundStatus();
-    }
-
-    function checkRoundStatus(){
-        const data = rounds[currentRound].questions[currentQuestion];
-        if(revealed===data.a.length){
-            alert("Gratulacje! Odgadnięto wszystkie odpowiedzi.");
-            nextQuestion();
-        } else if(strikes>=3){
-            alert("Trzy Pomyłki! Koniec pytania.");
-            // Opcjonalnie: Odkryj pozostałe odpowiedzi na koniec rundy
-            data.a.forEach((ans, index) => {
-                const slot = document.getElementById(`slot-${index}`);
-                if (!slot.classList.contains('revealed')) {
-                    slot.classList.add('revealed');
-                    slot.style.backgroundColor = '#c0392b'; // Czerwony kolor dla nieodkrytych
-                    slot.innerHTML = `<span>${index + 1}. ${ans.text}</span> <span class="points">${ans.pts}</span>`;
-                }
-            });
-            // Opóźnienie przed przejściem dalej, aby gracz zobaczył wyniki
-            setTimeout(nextQuestion, 3000); 
+            document.getElementById('strikes').innerText = 'X '.repeat(strikes);
+            if (strikes >= 3) finishRoundView();
+        } 
+        
+        if (revealed === currentAnswers.length) {
+            finishRoundView();
         }
     }
 
-    function nextQuestion(){
-        currentQuestion++;
-        if(currentQuestion>=rounds[currentRound].questions.length){
-            currentRound++;
-            currentQuestion=0;
-        }
-        if(currentRound>=rounds.length){
-            alert("Koniec gry! Twój ostateczny wynik: "+score);
-            location.reload();
-            return;
-        }
-        // Upewnij się, że nie wywołuje initRound natychmiast po 3 pomyłkach
-        if (strikes < 3) {
+    function finishRoundView() {
+        // Pokaż panel przyznawania punktów i odkryj brakujące odpowiedzi
+        document.getElementById('round-actions').style.display = 'block';
+        document.getElementById('game-inputs').style.opacity = '0.3';
+        
+        const currentAnswers = allQuestions[currentQuestionIndex].a;
+        currentAnswers.forEach((ans, i) => {
+            const s = document.getElementById(`s-${i}`);
+            if (!s.classList.contains('revealed')) {
+                s.className = 'slot missed'; // Użycie nowej klasy missed
+                s.innerHTML = `<span>${i+1}. ${ans[0]}</span><span>${ans[1]}</span>`;
+            }
+        });
+    }
+
+    function assignPoints(team) {
+        if (team === 1) score1 += bank;
+        else score2 += bank;
+        document.getElementById('score1').innerText = score1;
+        document.getElementById('score2').innerText = score2;
+        
+        document.getElementById('round-msg').innerText = `Punkty z banku (${bank}) przyznane Drużynie ${team}. Możesz przejść dalej.`;
+        document.querySelectorAll('.btn-give').forEach(b => b.style.display = 'none');
+        document.getElementById('next-round-btn').style.display = 'block';
+    }
+
+    function goToNextRound() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < allQuestions.length) {
+            document.querySelectorAll('.btn-give').forEach(b => b.style.display = 'inline-block');
+            document.getElementById('round-msg').innerText = "Runda zakończona! Komu przyznać bank?";
             initRound();
+        } else {
+            alert(`KONIEC TURNIEJU! Wyniki: Drużyna 1: ${score1} pkt, Drużyna 2: ${score2} pkt`);
+            location.reload();
         }
     }
 
-    inputEl.addEventListener("keyup", function(event){
-        if(event.key==="Enter") handleGuess();
+    function toggleTeam() {
+        activeTeam = (activeTeam === 1) ? 2 : 1;
+        document.getElementById('team1-box').classList.toggle('active');
+        document.getElementById('team2-box').classList.toggle('active');
+    }
+
+    document.getElementById('ans-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAns();
     });
 
-    // Start gry
     initRound();
 </script>
-
 </body>
 </html>
